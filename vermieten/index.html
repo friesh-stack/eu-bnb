@@ -1892,15 +1892,12 @@ var FAQ = [
   ["Was ist, wenn sich Preise oder Fotos ändern?","Kurze Nachricht genügt – Änderungen sind inklusive. Neue Preise können Sie auch selbst im Vermieter-Bereich eintragen."]
 ];
 
-function EXW(){return EXAMPLES.filter(function(x){return x.url})[0]||{t:"",url:"about:blank"}}
+function exU(x){if(x.gen&&!x.url)x.url=exSite(x.gen);return x.url}function EXW(){EXAMPLES.forEach(exU);return EXAMPLES.filter(function(x){return x.url})[0]||{t:"",url:"about:blank"}}function exOpen(i){var u=exU(EXAMPLES[i])||EXW().url;window.open(u,"_blank")}
 var EXAMPLES = [
   { t:"Dünenvilla 3", tag:"Beispiel-Website · Maisonette mit Kaminofen", img:"dv3_wohnen", gen:"dv3",
     pts:["So baut das System eine Seite aus Angaben und Fotos","Galerie mit Bildunterschriften, Preise je Saison","Anfrage per E-Mail oder WhatsApp mit Preisrechner"] },
   { t:"Dünenvilla 5", tag:"Beispiel-Website · Apartment mit Garten am Wald", img:"dv5_garten", gen:"dv5",
-    pts:["Auch für eine einzelne Wohnung","Hunde willkommen – steht da, wo der Gast es sucht","Karte mit Lage der Wohnung"] },
-  { t:"Live-Website Dünenvilla & Strandvilla", tag:"Echt und in Betrieb · 4 Unterkünfte", img:"strandkorb",
-    url:"https://xn--ostseebad-mnchgut-9zb.de/duenenvilla.html",
-    pts:["Live-Belegung und Preise aus dem Buchungsplan","Sofort-Angebot für den Gast","Weg vom Parkplatz bis zum Strand in Fotos"] }
+    pts:["Auch für eine einzelne Wohnung","Hunde willkommen – steht da, wo der Gast es sucht","Karte mit Lage der Wohnung"] }
 ];
 
 /* ---------- Vermieter & Unterkünfte im Portal ----------
@@ -2271,7 +2268,7 @@ function renderLanding(){
   $("lheroImg").src=pic("duene")||pic("strandkorb");
   EXAMPLES.forEach(function(x){if(x.gen&&!x.url)x.url=exSite(x.gen)});
   setTimeout(function(){exInline();if(EXW()&&$("exIframe")&&!$("exIframe").src){$("exFrameTitle").textContent=EXW().t;$("exIframe").src=EXW().url;$("exFrame").classList.remove("hidden")}},400);
-  $("exGrid").innerHTML=EXAMPLES.map(function(x,i){return'<div class="ex"><img src="'+pic(x.img)+'" alt=""><div class="in2"><div class="tagl">'+esc(x.tag)+'</div><h3 style="margin:0">'+esc(x.t)+'</h3><ul>'+x.pts.map(function(p){return"<li>"+esc(p)+"</li>"}).join("")+'</ul><div class="btns"><a class="btn small" href="'+(x.url||EXW().url)+'" target="_blank" rel="noopener">Website öffnen ↗</a><button class="btn small ghost" onclick="exPrev('+i+')">Hier ansehen</button></div></div></div>'}).join("");
+  $("exGrid").innerHTML=EXAMPLES.map(function(x,i){return'<div class="ex"><img src="'+pic(x.img)+'" alt=""><div class="in2"><div class="tagl">'+esc(x.tag)+'</div><h3 style="margin:0">'+esc(x.t)+'</h3><ul>'+x.pts.map(function(p){return"<li>"+esc(p)+"</li>"}).join("")+'</ul><div class="btns"><button class="btn small" onclick="exOpen('+i+')">Website öffnen ↗</button><button class="btn small ghost" onclick="exPrev('+i+')">Hier ansehen</button></div></div></div>'}).join("");
   $("paketGrid").innerHTML=PAKETE.map(function(p){var zero=/^0/.test(p.provision||"");
     var pr=zero?(p.grundgebuehr?esc(p.grundgebuehr)+' <small>'+esc(p.einheit||"")+'</small>':'Preis auf Anfrage'):esc(p.provision)+' <small>Provision je Buchung</small>';
     return'<div class="pk'+(p.top?" top":"")+(p.voll?" voll":"")+'" onclick="openPaket(\''+p.id+'\')">'+(p.top?'<span class="tag">Am beliebtesten</span>':p.voll?'<span class="tag">Sie kümmern sich um nichts</span>':'')+'<h3>'+esc(p.name)+'</h3>'+
@@ -2280,7 +2277,7 @@ function renderLanding(){
   var opts=PAKETE.map(function(p){return'<option value="'+p.id+'"'+(p.top?" selected":"")+'>'+esc(p.name)+'</option>'}).join("");
   $("o_paket").innerHTML=opts;$("w_paket").innerHTML=opts;
 }
-function exPrev(i){var x=EXAMPLES[i];if(!x.url)x={t:x.t,url:EXW().url};$("exFrameTitle").textContent=x.t;$("exIframe").src=x.url;$("exFrame").classList.remove("hidden");$("exFrame").scrollIntoView({behavior:"smooth"})}
+function exPrev(i){var x=EXAMPLES[i];exU(x);if(!x.url)x={t:x.t,url:EXW().url};$("exFrameTitle").textContent=x.t;$("exIframe").src=x.url;$("exFrame").classList.remove("hidden");$("exFrame").scrollIntoView({behavior:"smooth"})}
 function pickPaket(id){DRAFT.paket=id;$("w_paket").value=id;$("o_paket").value=id;if(id==="service"||id==="voll"){go("#lBuchen");toast("Schreiben Sie uns kurz – wir melden uns persönlich.",3500);return}startDraft()}
 function sendOrder(){
   var n=$("o_name").value.trim(),m=$("o_mail").value.trim();if(!n||!m){toast("Bitte Name und E-Mail eintragen");return}
@@ -2636,8 +2633,8 @@ function siteVoice(vid,firma){
   return{css:css,html:html,js:js}}
 
 function assetTxt(id){var e=document.getElementById(id);return e?e.textContent:""}
-function buildSite(D){var h=buildSite0(D),L0=window.BW_LANG||"de",langs=[L0,"en","de"].filter(function(x,i,a){return a.indexOf(x)===i});
-  var js="<script>("+bwI18n.toString()+")({langs:"+JSON.stringify(langs)+",def:"+JSON.stringify(L0)+",dict:\"https://eu-bnb.com/vermieten/i18n/\",api:"+JSON.stringify(PORTAL.claude)+",key:\"site\"})<\/script>";
+function buildSite(D,X){var h=buildSite0(D),L0=window.BW_LANG||"de",langs=[L0,"en","de"].filter(function(x,i,a){return a.indexOf(x)===i});
+  var js="<script>("+bwI18n.toString()+")({langs:"+JSON.stringify(langs)+",def:"+JSON.stringify(L0)+",dict:\"https://eu-bnb.com/vermieten/i18n/\",api:"+JSON.stringify(PORTAL.claude)+",key:\""+(X&&X.ex?"ex_"+L0:"site")+"\""+(X&&X.ex?",first:"+JSON.stringify(L0):"")+"})<\/script>";
   var k=h.lastIndexOf("</body>");return k>=0?h.slice(0,k)+js+h.slice(k):h+js}
 function buildSite0(D){
   var d=DESIGNS[D.design]||DESIGNS.duene,k=D.kontakt,firma=k.firma||k.name||"Ferienwohnungen in Europa";
@@ -2690,7 +2687,7 @@ function exSite(id){var l=LI(id)||SEED.filter(function(x){return x.id===id})[0];
     intro:l.kurz,units:[{uid:"u1",name:l.name,art:l.art,ort:l.ort+" (Rügen)",qm:l.qm,max:l.max,zimmer:l.zimmer,hund:l.hund,sauna:l.sauna,kamin:l.kamin,strand:l.strand,
     preise:l.preise,reinigung:l.reinigung,ausstattung:(l.feat||[]).join(", "),beschreibung:l.kurz,lat:l.lat,lng:l.lng}],
     photos:l.fotos.map(function(f,i){return{src:fsrc(f),cap:capOf(l,i),unit:"u1"}})};
-  try{return URL.createObjectURL(new Blob([buildSite(D)],{type:"text/html"}))}catch(e){return""}}
+  try{return URL.createObjectURL(new Blob([buildSite(D,{ex:true})],{type:"text/html"}))}catch(e){return""}}
 
 var _ih0=location.hash;setTimeout(function(){if(_ih0==="#assistent"&&typeof vOpen==="function")vOpen("gast")},900);setTimeout(function(){if(_ih0==="#inselseite"){if(typeof showVm==="function"&&!document.body.classList.contains("vmode"))showVm();setTimeout(function(){var e=document.getElementById("lInsel");if(e)e.scrollIntoView({behavior:"smooth"})},300)}},700);
 /* ---------- Buchen & veröffentlichen ---------- */
@@ -2751,7 +2748,7 @@ ANGEBOTE:
 - INSELSEITE (Website als Unterseite): 19 € pro Monat, 0 % Provision, Zusatzoptionen dazubuchbar. Vermieter bekommen ihre Unterseite auf dem Länderportal ihres Landes: it-bnb.com, fr-bnb.com, es-bnb.com, dk-bnb.dk, se-bnb.com, no-bnb.com, fi-bnb.com bzw. debnb.de. 14 Tage gratis testen. Der reine Portal-Eintrag (ohne Zusatzoptionen) kostet 99 € im ersten Jahr, danach 20 € pro Jahr. Keine anderen Beträge erfinden.
 SAISONZEITEN IM PORTAL: Vor- und Nachsaison 06.01.–31.03. und 01.11.–22.12.; Zwischensaison 01.04.–15.06. und 15.09.–31.10.; Hauptsaison 16.06.–14.09. und 23.12.–05.01.
 BESTEHENDE PORTALE: Der Vermieter kann andere Portale behalten; die eigene Website ergänzt sie, damit Stammgäste und Empfehlungen direkt und ohne Provision buchen.
-BEISPIEL-WEBSITES: Dünenvilla 3 und Dünenvilla 5 (unsere eigenen Wohnungen in Thiessow auf Rügen, mit dem Baukasten erstellt) sowie die Live-Website Dünenvilla & Strandvilla (Live-Belegung, Sofort-Angebot). Alle sind auf dieser Seite unter „Beispiele“ zu sehen.
+BEISPIEL-WEBSITES: Dünenvilla 3 und Dünenvilla 5 (unsere eigenen Wohnungen in Thiessow auf Rügen, mit dem Baukasten erstellt), jeweils in der Sprache des Besuchers. Beide sind auf dieser Seite unter „Beispiele“ zu sehen.
 LÄNDER: BnB Europa umfasst Italien, Frankreich, Spanien, Dänemark, Schweden, Norwegen, Finnland und Deutschland, jeweils mit eigenem Länderportal (Gästeseite in Landessprache, Englisch und Deutsch).de, amrumbnb.de, foehrbnb.de und wangeroogebnb.de.
 KONTAKT: E-Mail dbuchung@gmail.com. Auf dieser Seite gibt es unten das Formular „Rückruf oder Nachricht“. Wenn der Vermieter einen Rückruf möchte, frag nach Name, Telefonnummer und gern der E-Mail-Adresse und der Zahl seiner Unterkünfte; diese Angaben werden nach dem Gespräch in das Rückruf-Formular übernommen, der Vermieter schickt es dann selbst ab.`;
 
@@ -3082,7 +3079,7 @@ var NAMEN={it:"Italian",en:"English",fr:"French",es:"Spanish",nl:"Dutch",da:"Dan
 var LANGS={};(o.langs||Object.keys(ALL)).forEach(function(k){if(ALL[k])LANGS[k]=ALL[k]});
 var q=new URLSearchParams(location.search),L=q.get("lang"),KP=o.key||"bw";
 try{if(!L)L=localStorage.getItem(KP+"_lang")}catch(e){}
-if(!L)L=(navigator.language||"en").slice(0,2).replace("no","nb");
+if(!L)L=o.first||(navigator.language||"en").slice(0,2).replace("no","nb");
 if(!LANGS[L])L=LANGS[o.def]?o.def:Object.keys(LANGS)[0];
 try{localStorage.setItem(KP+"_lang",L)}catch(e){}
 window.BW_LANG=L;window.BW_SPRACHE=NAMEN[L]||"German";
@@ -3093,7 +3090,7 @@ function sel(){if(document.getElementById("bwLang")||Object.keys(LANGS).length<2
   var s=document.createElement("select");s.id="bwLang";s.setAttribute("data-noi18n","1");s.setAttribute("aria-label","Language");
   if(n){s.className="icbtn";s.style.cssText="width:64px;padding:0 4px;font-weight:600"}else s.style.cssText="position:fixed;top:10px;right:10px;z-index:3000;padding:6px;border-radius:10px;border:1px solid #ccc;background:#fff;font:600 13px sans-serif";
   Object.keys(LANGS).forEach(function(k){var op=document.createElement("option");op.value=k;op.textContent=(k==="nb"?"NO":k.toUpperCase())+" · "+LANGS[k];if(k===L)op.selected=true;s.appendChild(op)});
-  s.onchange=function(){try{localStorage.setItem(KP+"_lang",s.value)}catch(e){}var u=new URL(location.href);u.searchParams.set("lang",s.value);location.href=u.toString()};
+  s.onchange=function(){try{localStorage.setItem(KP+"_lang",s.value)}catch(e){}if(location.protocol==="blob:"){location.reload();return}var u=new URL(location.href);u.searchParams.set("lang",s.value);location.href=u.toString()};
   if(n)n.insertBefore(s,n.firstChild);else document.body.appendChild(s)}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",sel);else sel();setTimeout(sel,1500);
 if(L==="de")return;
