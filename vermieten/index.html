@@ -1520,7 +1520,7 @@ label.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-weight:5
         <p class="lead">Ein echter Eintrag, genau so, wie Gäste ihn sehen: Fotos, Beschreibung, Umgebung, Preise, Belegung, Impressum, Datenschutz und AGB – und darunter die Anfrage, die direkt beim Vermieter ankommt.</p>
         <div id="exSlot" class="exslot"></div>
         <h2 style="margin-top:34px">So sieht Ihre Website aus</h2>
-        <p class="lead">Zwei Beispiele aus unserem eigenen Bestand: <b>Dünenvilla 3</b> und <b>Dünenvilla 5</b>. Genau so baut das System Ihre Seite aus Ihren Angaben und Fotos – ob in Italien, Schweden oder Spanien. Schauen Sie sie in Ruhe an, am besten auf dem Handy.</p>
+        <p class="lead">Drei Stile zur Wahl – <b>Mittelmeer</b>, <b>Skandinavien</b> und <b>Stadt &amp; Altbau</b>, gezeigt an unseren eigenen Wohnungen Dünenvilla 3 und 5. Genau so baut das System Ihre Seite aus Ihren Angaben und Fotos – ob in Italien, Schweden oder Spanien. Schauen Sie sie in Ruhe an, am besten auf dem Handy.</p>
         <div class="examples" id="exGrid"></div>
         <div id="exFrame" class="hidden"><div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;flex-wrap:wrap"><b id="exFrameTitle"></b><button class="btn small ghost" onclick="$('exFrame').classList.add('hidden')">Vorschau schließen</button></div><div class="framewrap"><iframe id="exIframe" title="Vorschau"></iframe></div></div>
       </div>
@@ -1892,12 +1892,14 @@ var FAQ = [
   ["Was ist, wenn sich Preise oder Fotos ändern?","Kurze Nachricht genügt – Änderungen sind inklusive. Neue Preise können Sie auch selbst im Vermieter-Bereich eintragen."]
 ];
 
-function exU(x){if(x.gen&&!x.url)x.url=exSite(x.gen);return x.url}function EXW(){EXAMPLES.forEach(exU);return EXAMPLES.filter(function(x){return x.url})[0]||{t:"",url:"about:blank"}}function exOpen(i){var u=exU(EXAMPLES[i])||EXW().url;window.open(u,"_blank")}
+function exU(x){if(x.gen&&!x.url)x.url=exSite(x.gen,x.des);return x.url}function EXW(){EXAMPLES.forEach(exU);return EXAMPLES.filter(function(x){return x.url})[0]||{t:"",url:"about:blank"}}function exOpen(i){var u=exU(EXAMPLES[i])||EXW().url;window.open(u,"_blank")}
 var EXAMPLES = [
-  { t:"Dünenvilla 3", tag:"Beispiel-Website · Maisonette mit Kaminofen", img:"dv3_wohnen", gen:"dv3",
-    pts:["So baut das System eine Seite aus Angaben und Fotos","Galerie mit Bildunterschriften, Preise je Saison","Anfrage per E-Mail oder WhatsApp mit Preisrechner"] },
-  { t:"Dünenvilla 5", tag:"Beispiel-Website · Apartment mit Garten am Wald", img:"dv5_garten", gen:"dv5",
-    pts:["Auch für eine einzelne Wohnung","Hunde willkommen – steht da, wo der Gast es sucht","Karte mit Lage der Wohnung"] }
+  { t:"Stil „Mittelmeer“", tag:"Beispiel · Dünenvilla 3 – warme Farben, große Fotos", img:"dv3_wohnen", gen:"dv3", des:"med",
+    pts:["Für Italien, Frankreich, Spanien und alle Küsten im Süden","Galerie mit Bildunterschriften, Preise je Saison","Anfrage per E-Mail oder WhatsApp mit Preisrechner"] },
+  { t:"Stil „Skandinavien“", tag:"Beispiel · Dünenvilla 5 – hell, klar, ruhig", img:"dv5_garten", gen:"dv5", des:"nord",
+    pts:["Für Dänemark, Schweden, Norwegen, Finnland, Nord- und Ostsee","Schlichte Linien, viel Weißraum","Hunde, Sauna, Kamin – sofort sichtbar"] },
+  { t:"Stil „Stadt & Altbau“", tag:"Beispiel · Dünenvilla 3 – elegant, dunkel mit Goldakzent", img:"dv3_wohnen", gen:"dv3", des:"city",
+    pts:["Für Stadtwohnungen, Altbau und Ferienhäuser mit Charakter","Klare Gliederung, edle Wirkung","Karte mit Lage der Wohnung"] }
 ];
 
 /* ---------- Vermieter & Unterkünfte im Portal ----------
@@ -2235,7 +2237,7 @@ function renderAllGuest(){renderRows();renderOrte();renderIdeas();drawMarkers();
    VERMIETER-BEREICH
    ================================================================ */
 var SESSION=lsGet("nb_session",null);
-var DRAFT={units:[],photos:[],kontakt:{name:"",firma:"",email:"",whatsapp:"",kanal:"email"},dom:"sub",sub:"",eigen:"",design:"duene",intro:"",paket:"website"};
+var DRAFT={units:[],photos:[],kontakt:{name:"",firma:"",email:"",whatsapp:"",kanal:"email"},dom:"sub",sub:"",eigen:"",design:defDesign(),intro:"",paket:"website"};
 var SITE_HTML="";
 
 function setHash(h){try{history.replaceState(null,"",h||location.pathname+location.search)}catch(e){}}
@@ -2578,9 +2580,15 @@ document.addEventListener("change",function(e){if(e.target.name==="k_kanal"){DRA
 
 /* ---------- Website ---------- */
 var DESIGNS={
-  duene:{name:"Dünen",brand:"#1f5f7a",brand2:"#2f8bab",bg:"#f6f1e7",card:"#ffffff",accent:"#e2a03f"},
-  bodden:{name:"Salzwiese",brand:"#2f5a43",brand2:"#5f8a6c",bg:"#f2f4ee",card:"#ffffff",accent:"#c8553d"},
-  reet:{name:"Reetdach",brand:"#7a5a35",brand2:"#a8875a",bg:"#f8f3ea",card:"#ffffff",accent:"#1f5f7a"}};
+  med:{name:"Mittelmeer",lay:"med",brand:"#b5532c",brand2:"#d98a4e",bg:"#fbf5ec",card:"#ffffff",accent:"#2e6f8e"},
+  nord:{name:"Skandinavien",lay:"nord",brand:"#2b3a42",brand2:"#6f8a94",bg:"#f7f8f6",card:"#ffffff",accent:"#c99a4b"},
+  city:{name:"Stadt & Altbau",lay:"city",brand:"#1e2a3a",brand2:"#3b4d66",bg:"#f3efe8",card:"#ffffff",accent:"#b08d3c"}};
+DESIGNS.duene=DESIGNS.med;
+function defDesign(){var L=window.BW_LANG||"de";return /^(da|sv|nb|fi)$/.test(L)?"nord":/^(it|fr|es)$/.test(L)?"med":"city"}
+var LAY={
+ med:"h1,h2,h3{font-style:italic}.hero{min-height:78vh}.hero:after{background:linear-gradient(180deg,rgba(120,50,20,.05),rgba(90,35,15,.62))}.u{border-radius:28px;border-top:6px solid var(--ac)}.ch span{background:#fff1e4;border-color:#f1d9c2}.g img{aspect-ratio:3/2}nav b{font-style:italic}.btn{border-radius:14px}",
+ nord:"h1,h2,h3{font-family:Inter,system-ui,sans-serif;font-weight:300;letter-spacing:.01em}.hero h1{text-transform:uppercase;letter-spacing:.08em;font-weight:200}.hero{min-height:60vh}.hero:after{background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.42))}.u,.f,#map{border-radius:0;box-shadow:none;border:1px solid #e4e7e3}.btn,nav a.c{border-radius:0;letter-spacing:.04em}.g{gap:2px}.ch span{border-radius:0}section{padding:64px 0}footer{background:#2b3a42}nav b{font-family:Inter,sans-serif;font-weight:300;letter-spacing:.12em;text-transform:uppercase}",
+ city:"h1,h2,h3{letter-spacing:.02em}h2{text-transform:uppercase;font-size:1.25rem;letter-spacing:.14em;border-bottom:1px solid var(--ac);padding-bottom:8px}.hero{min-height:72vh}.hero:after{background:linear-gradient(90deg,rgba(20,30,45,.88),rgba(20,30,45,.35) 60%,rgba(20,30,45,.1))}.hero .w>*{max-width:560px}.hero h1{font-weight:500}.u{border-radius:4px;border-left:4px solid var(--ac)}.btn,nav a.c{border-radius:4px;text-transform:uppercase;letter-spacing:.08em;font-size:.88rem}.f,#map{border-radius:4px}footer{background:#1e2a3a}.ch span{border-radius:4px}"};
 function renderDesigns(){$("designs").innerHTML=Object.keys(DESIGNS).map(function(k){var d=DESIGNS[k];return'<div class="design'+(DRAFT.design===k?" on":"")+'" onclick="DRAFT.design=\''+k+'\';renderDesigns()"><i style="background:'+d.brand+'"></i><i style="background:'+d.accent+'"></i>'+d.name+'</div>'}).join("")}
 function domUI(){var e=document.querySelector('[name=w_dom]:checked').value;DRAFT.dom=e;$("domSub").classList.toggle("hidden",e!=="sub");$("domEigen").classList.toggle("hidden",e!=="eigen")}
 function prefillSite(){if(!DRAFT.sub)DRAFT.sub=slug(DRAFT.kontakt.firma||(DRAFT.units[0]||{}).name||"");$("w_sub").value=DRAFT.sub;$("w_eigen").value=DRAFT.eigen||"";$("w_intro").value=DRAFT.intro||"";$("w_paket").value=DRAFT.paket||"website";
@@ -2637,7 +2645,7 @@ function buildSite(D,X){var h=buildSite0(D),L0=window.BW_LANG||"de",langs=[L0,"e
   var js="<script>("+bwI18n.toString()+")({langs:"+JSON.stringify(langs)+",def:"+JSON.stringify(L0)+",dict:\"https://eu-bnb.com/vermieten/i18n/\",api:"+JSON.stringify(PORTAL.claude)+",key:\""+(X&&X.ex?"ex_"+L0:"site")+"\""+(X&&X.ex?",first:"+JSON.stringify(L0):"")+"})<\/script>";
   var k=h.lastIndexOf("</body>");return k>=0?h.slice(0,k)+js+h.slice(k):h+js}
 function buildSite0(D){
-  var d=DESIGNS[D.design]||DESIGNS.duene,k=D.kontakt,firma=k.firma||k.name||"Ferienwohnungen in Europa";
+  var d=DESIGNS[D.design]||DESIGNS[defDesign()],k=D.kontakt,firma=k.firma||k.name||"Ferienwohnungen in Europa";
   var units=D.units.map(function(u,i){var ph=D.photos.filter(function(p){return p.unit===u.uid||(!p.unit&&D.units.length===1)});return{id:"w"+(i+1),name:u.name,art:u.art,ort:u.ort||"Europa",qm:+u.qm||null,max:+u.max||2,zimmer:u.zimmer,hund:u.hund,sauna:u.sauna,kamin:u.kamin,strand:u.strand,
     preise:{vor:+u.preise.vor||null,zwischen:+u.preise.zwischen||null,haupt:+u.preise.haupt||null},reinigung:+u.reinigung||0,feat:String(u.ausstattung||"").split(",").map(function(s){return s.trim()}).filter(Boolean),text:u.beschreibung||"",lat:u.lat||null,lng:u.lng||null,
     fotos:ph.map(function(p){return{src:p.src,cap:p.cap||p.raum||u.name}})}});
@@ -2667,6 +2675,7 @@ function buildSite0(D){
    "var t0=new Date();$('q_a').min=$('q_b').min=t0.toISOString().slice(0,10);if(!D.wa)$('bwa').style.display='none';if(!D.email)$('bem').style.display='none';calc();"+
    "var pts=D.units.filter(function(u){return u.lat});if(window.L&&pts.length){var m=L.map('map',{scrollWheelZoom:false}).setView([pts[0].lat,pts[0].lng],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(m);pts.forEach(function(u){L.marker([u.lat,u.lng]).addTo(m).bindPopup('<b>'+e(u.name)+'</b><br>'+e(u.ort))});if(pts.length>1)m.fitBounds(pts.map(function(u){return[u.lat,u.lng]}),{padding:[40,40],maxZoom:15})}else $('lage').style.display='none';"+
    "$('yr').textContent=new Date().getFullYear();";
+  css+=(LAY[d.lay]||"")+"#bwLang{top:66px!important}";
   var va=(D.paket!=="portal"&&SESSION&&SESSION.vid&&VOICE.endpoint)?siteVoice(SESSION.vid,firma):null;
   if(va){css+=va.css;js+=va.js}
   var title=firma+" – "+(D.region?"Ferienunterkünfte in "+D.region:"Ferienunterkünfte in Europa");
@@ -2682,8 +2691,8 @@ function buildSite0(D){
 }
 
 /* Beispiel-Websites (Dünenvilla 3 / 5) mit demselben Baukasten wie für Vermieter */
-function exSite(id){var l=LI(id)||SEED.filter(function(x){return x.id===id})[0];if(!l)return"";
-  var D={design:"duene",paket:"portal",region:"Thiessow · Rügen (Beispiel)",kontakt:{firma:l.name,name:"",email:PORTAL.kontakt.email,whatsapp:"",kanal:"email"},
+function exSite(id,des){var l=LI(id)||SEED.filter(function(x){return x.id===id})[0];if(!l)return"";
+  var D={design:des||defDesign(),paket:"portal",region:"Thiessow · Rügen (Beispiel)",kontakt:{firma:l.name,name:"",email:PORTAL.kontakt.email,whatsapp:"",kanal:"email"},
     intro:l.kurz,units:[{uid:"u1",name:l.name,art:l.art,ort:l.ort+" (Rügen)",qm:l.qm,max:l.max,zimmer:l.zimmer,hund:l.hund,sauna:l.sauna,kamin:l.kamin,strand:l.strand,
     preise:l.preise,reinigung:l.reinigung,ausstattung:(l.feat||[]).join(", "),beschreibung:l.kurz,lat:l.lat,lng:l.lng}],
     photos:l.fotos.map(function(f,i){return{src:fsrc(f),cap:capOf(l,i),unit:"u1"}})};
